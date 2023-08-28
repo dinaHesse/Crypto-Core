@@ -4,7 +4,7 @@ use IEEE.numeric_std.all;
 
 
 -- Package Declaration Section
-package crypteng_pckg is
+package cryptocore_pckg is
  
 	constant N_BITS : integer := 127;       -- Nicht aktuell, da masking der Dinge in aes_if stattfindet: if Protection order = 0 -> 127, =1 -> 255
 	constant N	: integer := 1;		--Protection order
@@ -22,11 +22,11 @@ package crypteng_pckg is
 	type entropy_bit_input_type is array (15 downto 0) of std_logic_vector(5 downto 0);
 
 	type dram_state_type is (store_entropy_idle, store1, store2, store3, idle_write, read1, read2, read3, read4, output_ready);
-end package crypteng_pckg;
+end package cryptocore_pckg;
  
 -- Package Body Section, e.g for function implementation (function declaration in head)
-package body crypteng_pckg is
+package body cryptocore_pckg is
  
 
  
-end package body crypteng_pckg;
+end package body cryptocore_pckg;

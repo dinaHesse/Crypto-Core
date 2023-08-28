@@ -1,10 +1,9 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Dina Hesse
 -- 
--- Create Date:    11:56:51 10/01/2021 
 -- Design Name: 
--- Module Name:    crypteng_top - struct 
+-- Module Name:    cryptocore_top - struct 
 
 ----------------------------------------------------------------------------------
 library IEEE;
@@ -13,10 +12,10 @@ use work.masked_aes_pkg.all;
 use IEEE.numeric_std.all;
 
 library work;
-use work.crypteng_pckg.all;
+use work.cryptocore_pckg.all;
 use work.masked_aes_pkg.all;
 
-entity crypteng_top is
+entity cryptocore_top is
  port (
     	clk   : in std_logic;
     	res   : in std_logic;
@@ -40,13 +39,13 @@ entity crypteng_top is
 	ready_extern_out: out	std_logic
 	
     );
-end crypteng_top;
+end cryptocore_top;
 
-architecture struct of crypteng_top is
+architecture struct of cryptocore_top is
 
 	signal res_n:			std_logic;
 
-	-- crypteng_if to aes_if:
+	-- cryptocore_if to aes_if:
 	signal plaintext_crypt_aes:	std_logic_vector(0 to N_BITS);
 	signal start_crypt_aes:		std_logic;
 	signal busy_aes_crypt:		std_logic;
@@ -92,7 +91,7 @@ begin
 
 	res_n <= NOT res;	--icicle-reset is active-high, I am used to active-low -> res_n
 	
-	crypteng_if: entity work.crypteng_if
+	cryptocore_if: entity work.cryptocore_if
 	port map(
 		clk => clk,
 		res_n => res_n,

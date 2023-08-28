@@ -2,19 +2,12 @@
 -- Company: 
 -- Engineer: 	Dina Hesse
 -- 
--- Create Date:    12:01:16 01/07/2022 
--- Design Name: 
--- Module Name:    Crypteng_if
--- Project Name: 
+-- Module Name:    cryptocore_if
+-- Project Name: 	Crypto-Core
 -- Target Devices: 
--- Tool versions: 
+-- Tool versions: v1.0
 -- Description: 
 --
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
 --
 ----------------------------------------------------------------------------------
 library IEEE;
@@ -22,9 +15,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 
 library work;
-use work.crypteng_pckg.all;
+use work.cryptocore_pckg.all;
 
-entity crypteng_if is
+entity cryptocore_if is
  port (
     clk   : in std_logic;
     res_n   : in std_logic;
@@ -56,10 +49,10 @@ entity crypteng_if is
 	--test: out std_logic
     );
 
-end crypteng_if;
+end cryptocore_if;
 
 
-architecture behav of crypteng_if is
+architecture behav of cryptocore_if is
 	
 	constant mem_adress : std_logic_vector(31 downto 0) := x"8000_0040"; 	--"10000000_00000000_00000000_01000000";
 	constant datareg_adress : std_logic_vector(5 downto 0) := b"10_0000"; -- start of data registers
