@@ -5,9 +5,7 @@ use IEEE.numeric_std.all;
 
 -- Package Declaration Section
 package cryptocore_pckg is
- 
-	constant N_BITS : integer := 127;       -- Nicht aktuell, da masking der Dinge in aes_if stattfindet: if Protection order = 0 -> 127, =1 -> 255
-	constant N	: integer := 1;		--Protection order
+	constant N	: integer := 1;		--if Protection order = 0 -> 127, =1 -> 255
 
 --only necessary if simulating the PUF:
 --	constant SIZE_PUF_SIM: integer := 128;	--size of registers for simulating the PUF
@@ -20,9 +18,9 @@ package cryptocore_pckg is
 	type instr_type is (aes, check, hash, genkey, datamem, idle); --to be continued :)
 	type key_cntrl_type is (idle, genkey, aes); -- gen_randomnumber, hash, ...
 
-	type entropy_bit_input_type is array (15 downto 0) of std_logic_vector(5 downto 0);
+	type seed_bit_input_type is array (15 downto 0) of std_logic_vector(5 downto 0);
 
-	type PUF_state_type is (store_entropy_idle, store1, store2, store3, idle_write, read1, read2, read3, read4, output_ready);
+	type PUF_state_type is (store_seed_idle, store1, store2, store3, idle_write, read1, read2, read3, read4, output_ready);
 end package cryptocore_pckg;
  
 -- Package Body Section, e.g for function implementation (function declaration in head)

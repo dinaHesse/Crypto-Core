@@ -1,4 +1,4 @@
 # Crypto-Core
-Cryptographic Co-Processor
+This is the Cryptographic Co-Processor for Internet of Things presented by Hesse et. al. at DSD Euromicro 2023.
 
-![alternative text](https://github.com/dinaHesse/Crypto-Core/blob/main/documentation/cryptocore-structure.png?raw=true)
+![structure of the Crypto-Core](https://github.com/dinaHesse/Crypto-Core/blob/main/documentation/cryptocore-structure.png?raw=true)

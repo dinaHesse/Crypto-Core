@@ -29,10 +29,10 @@ entity cryptocore_top is
 		write_mask_extern_in:	in std_logic_vector(3 downto 0);
 		write_value_extern_in:	in std_logic_vector(31 downto 0);
 
-		entropy_active_flush_in: in std_logic;
-		entropy_entropybits_in: in entropy_bit_input_type;
-		entropy_bit_counter_in:	in std_logic_vector(7 downto 0);
-		entropy_flush_done:		out std_logic;	
+		seed_active_flush_in: in std_logic;
+		seed_seedbits_in: in seed_bit_input_type;
+		seed_bit_counter_in:	in std_logic_vector(7 downto 0);
+		seed_flush_done:		out std_logic;	
 	
     -- Outputs:
 		read_value_extern_out: 	out std_logic_vector(31 downto 0);
@@ -239,11 +239,11 @@ begin
 
 	--Random Numbers
 		rn_PUF_out => rn_PUF,
-	--Entropy-Bits
-		active_flush_in => entropy_active_flush_in,
-		entropybits_in => entropy_entropybits_in,
-		entropy_bit_counter_in => entropy_bit_counter_in,
-		flush_done => entropy_flush_done
+	--seed-Bits
+		active_flush_in => seed_active_flush_in,
+		seedbits_in => seed_seedbits_in,
+		seed_bit_counter_in => seed_bit_counter_in,
+		flush_done => seed_flush_done
  	);
 
 

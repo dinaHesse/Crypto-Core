@@ -25,10 +25,10 @@ entity puf_connector is
 		--Random Numbers:
 		rn_PUF_out:		out std_logic_vector(511 downto 0);
 
-		--entropy-bits:
+		--seed-bits:
 		active_flush_in:in std_logic;
-		entropybits_in: in entropy_bit_input_type;
-		entropy_bit_counter_in: in std_logic_vector(7 downto 0);
+		seedbits_in: in seed_bit_input_type;
+		seed_bit_counter_in: in std_logic_vector(7 downto 0);
 		flush_done:	out std_logic
 
     );
@@ -37,10 +37,10 @@ end puf_connector;
 
 
 architecture behav of puf_connector is
-	signal	entropy_bits:	std_logic_vector(95 downto 0);
+	signal	seed_bits:	std_logic_vector(95 downto 0);
 	signal	PUF_simulation:	std_logic_vector(SIZE_PUF_SIM-1 downto 0);
 
-	signal entropy_stored:	std_logic;
+	signal seed_stored:	std_logic;
 	signal counter: unsigned(31 downto 0);
 	signal flush_done_intern: std_logic;
 
@@ -62,7 +62,7 @@ begin
 	set_next_state: process (clk, res_n) is
 	begin
 		if(res_n = '0') then
-			state_now <= store_entropy_idle;
+			state_now <= store_seed_idle;
 		else
 		  if(clk'event and clk = '1') then 
 			state_now <= next_state;
@@ -71,7 +71,7 @@ begin
 
 	end process set_next_state;
 
-	transition: process(state_now, read_in, flush_done_intern, PUF_ready_in, entropy_stored, counter, PUF_read_value_in, entropy_bits) is
+	transition: process(state_now, read_in, flush_done_intern, PUF_ready_in, seed_stored, counter, PUF_read_value_in, seed_bits) is
 		variable PUF_address_reg: unsigned(31 downto 0) := x"00000000";
 		variable key_reg: std_logic_vector(127 downto 0) := (others => '0');
 	begin
@@ -84,23 +84,23 @@ begin
 		key_reg := (others => '0');  --zur latch-vermeidung
 
 		case state_now is
-			when store_entropy_idle =>
+			when store_seed_idle =>
 				if (flush_done_intern = '1') then
 					PUF_address_out <= std_logic_vector(PUF_address_reg+0+counter);	
 					PUF_sel_out <= '1';
 					PUF_write_mask_out <= "1111";
-					PUF_write_value_out <= entropy_bits(31 downto 0);		
+					PUF_write_value_out <= seed_bits(31 downto 0);		
 					
 					next_state <= store1;
 				else
-					next_state <= store_entropy_idle;
+					next_state <= store_seed_idle;
 				end if;
 			when store1 =>
 				if (PUF_ready_in = '1') then
 					PUF_address_out <= std_logic_vector(PUF_address_reg+1+counter);	
 					PUF_sel_out <= '1';
 					PUF_write_mask_out <= "1111";
-					PUF_write_value_out <= entropy_bits(63 downto 32);		
+					PUF_write_value_out <= seed_bits(63 downto 32);		
 					
 					next_state <= store2;					
 				else
@@ -111,7 +111,7 @@ begin
 					PUF_address_out <= std_logic_vector(PUF_address_reg+2+counter);	
 					PUF_sel_out <= '1';
 					PUF_write_mask_out <= "1111";
-					PUF_write_value_out <= entropy_bits(95 downto 64);		
+					PUF_write_value_out <= seed_bits(95 downto 64);		
 					
 					next_state <= store3;					
 				else
@@ -119,10 +119,10 @@ begin
 				end if;
 			when store3 =>
 				if (PUF_ready_in = '1') then
-					if (entropy_stored = '1') then
+					if (seed_stored = '1') then
 						next_state <= idle_write;
 					else
-						next_state <= store_entropy_idle;					
+						next_state <= store_seed_idle;					
 					end if;
 				else
 					next_state <= store3;
@@ -210,14 +210,14 @@ begin
 --			PUF_write_value_out <= (others => '0');
 --		else
 --		if (clk'event and clk = '1') then 
---			if (flush_done_intern = '1') then  --write entropy bits to PUF
---				for k in 1 to 3 loop--entropybits_in'length loop
+--			if (flush_done_intern = '1') then  --write seed bits to PUF
+--				for k in 1 to 3 loop--seedbits_in'length loop
 --					PUF_address_out <= std_logic_vector(PUF_address_reg+to_unsigned(k, 32)+counter);	--DAS WIRD SO NICHT FUNKTIONIEREN!!!
 --					PUF_sel_out <= '1';
 --					PUF_write_mask_out <= "1111";
---					PUF_write_value_out <= entropy_bits((32*k)-1 downto 32*k-32);
+--					PUF_write_value_out <= seed_bits((32*k)-1 downto 32*k-32);
 --				end loop;
---			elsif (entropy_stored = '1' and read_in = '1') then	--read PUF numbers
+--			elsif (seed_stored = '1' and read_in = '1') then	--read PUF numbers
 --				key_out <= (others => '0');
 --				for k in 1 to 4 loop--key'length loop								--DAS WIRD SO NICHT FUNKTIONIEREN!!!
 --					PUF_address_out <= std_logic_vector(PUF_address_reg+to_unsigned(k, 32));
@@ -239,33 +239,33 @@ begin
 --	end process cntrl_PUF;
 
 
-	store_entropy_bits: process(clk, res_n) is
+	store_seed_bits: process(clk, res_n) is
 		
 	begin
 		if(res_n = '0') then
-			entropy_bits <= (others => '0');
+			seed_bits <= (others => '0');
 			flush_done <= '0';
 			flush_done_intern <= '0';
 			counter <= x"00000000";
-			entropy_stored <= '0';
+			seed_stored <= '0';
 		else
 		if (clk'event and clk = '1') then
 			flush_done <= '0';
 			flush_done_intern <= '0';
 			if (active_flush_in = '1') then
-				for k in 1 to entropybits_in'length loop
-					entropy_bits( ((6*k)-1) downto ((6*k)-6) ) <= entropybits_in(k-1);	--richtige Reihenfolge? (95 - (6*k) downto 90-(6*k))
+				for k in 1 to seedbits_in'length loop
+					seed_bits( ((6*k)-1) downto ((6*k)-6) ) <= seedbits_in(k-1);	--richtige Reihenfolge? (95 - (6*k) downto 90-(6*k))
 				end loop;
 				counter <= counter + 1;
 				flush_done <= '1';
 				flush_done_intern <= '1';
-				if (entropy_bit_counter_in(7) = '1') then --wenn höchstes Bit = 1 ist -> extraction fertig (this bit just has this function)
-					entropy_stored <= '1';
+				if (seed_bit_counter_in(7) = '1') then --wenn höchstes Bit = 1 ist -> extraction fertig (this bit just has this function)
+					seed_stored <= '1';
 				end if;
 			end if;
 		end if;
 		end if;	
-	end process store_entropy_bits;
+	end process store_seed_bits;
 
 
 --process for simulating some input from "PUF-PUF" 

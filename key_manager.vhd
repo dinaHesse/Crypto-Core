@@ -43,7 +43,7 @@ architecture behav of key_manager is
 	signal	key_reg :	key_reg_type;
 	signal	generating_key_index:	integer range key_reg_type'length-1 downto 0;
 	signal	is_generating: 	std_logic;
-	signal 	entropy_stored:	std_logic;
+	signal 	seed_stored:	std_logic;
 
 begin
 
@@ -72,7 +72,7 @@ begin
 						end if;
 						ready_out <= '1';
 	
-				when genkey => 	--key_reg(to_integer(unsigned(key_address_in))) <= (x"2b7e151628aed2a6abf7158809cf4f3c") xor entropy_bits(127 downto 0);
+				when genkey => 	--key_reg(to_integer(unsigned(key_address_in))) <= (x"2b7e151628aed2a6abf7158809cf4f3c") xor seed_bits(127 downto 0);
 						ready_out <= '0';
 		
 	   			when others => 	aes_key_out <= (others=>'0');
@@ -89,31 +89,31 @@ begin
 
 	end process cntrl_key;
 
--- 	store_entropy_bits: process(clk, res_n) is
+-- 	store_seed_bits: process(clk, res_n) is
 --
 --		variable counter: integer := 0;
 -- 	begin
 -- 		if(res_n = '0') then
---			entropy_bits <= (others => '0');
--- 			entropy_flush_done <= '0';
+--			seed_bits <= (others => '0');
+-- 			seed_flush_done <= '0';
 --			counter := 0;
---			entropy_stored <= '0';
+--			seed_stored <= '0';
 -- 		else
 -- 		if (clk'event and clk = '1') then
--- 			entropy_flush_done <= '0';
--- 			if (entropy_active_flush_in = '1') then
--- 				for k in 1 to entropy_entropybits_in'length loop
---					entropy_bits( ((6*k)-1+counter) downto ((6*k)-6+counter) ) <= entropy_entropybits_in(k-1);	--richtige Reihenfolge? (95 - (6*k) downto 90-(6*k))
+-- 			seed_flush_done <= '0';
+-- 			if (seed_active_flush_in = '1') then
+-- 				for k in 1 to seed_seedbits_in'length loop
+--					seed_bits( ((6*k)-1+counter) downto ((6*k)-6+counter) ) <= seed_seedbits_in(k-1);	--richtige Reihenfolge? (95 - (6*k) downto 90-(6*k))
 -- 				end loop;
---				counter := counter + to_integer(unsigned(entropy_bit_counter_in));
--- 				entropy_flush_done <= '1';
---				if (entropy_bit_counter_in(7) = '1') then --wenn höchstes Bit = 1 ist -> extraction fertig (this bit just has this function)
---					entropy_stored <= '1';
+--				counter := counter + to_integer(unsigned(seed_bit_counter_in));
+-- 				seed_flush_done <= '1';
+--				if (seed_bit_counter_in(7) = '1') then --wenn höchstes Bit = 1 ist -> extraction fertig (this bit just has this function)
+--					seed_stored <= '1';
 --				end if;
 -- 			end if;
 -- 		end if;
 -- 		end if;	
---	end process store_entropy_bits;
+--	end process store_seed_bits;
 
 	gen_key: process(clk, res_n) is
 
