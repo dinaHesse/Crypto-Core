@@ -9,7 +9,8 @@ package cryptocore_pckg is
 	constant N_BITS : integer := 127;       -- Nicht aktuell, da masking der Dinge in aes_if stattfindet: if Protection order = 0 -> 127, =1 -> 255
 	constant N	: integer := 1;		--Protection order
 
-	constant SIZE_DRAM_SIM: integer := 128;	--size of registers for simulating the dram
+--only necessary if simulating the PUF:
+--	constant SIZE_PUF_SIM: integer := 128;	--size of registers for simulating the PUF
 
 	type data_reg_type is array (3 downto 0) of std_logic_vector(31 downto 0);
 	type ciphertext_reg_type is array (3 downto 0) of std_logic_vector(31 downto 0);
@@ -21,7 +22,7 @@ package cryptocore_pckg is
 
 	type entropy_bit_input_type is array (15 downto 0) of std_logic_vector(5 downto 0);
 
-	type dram_state_type is (store_entropy_idle, store1, store2, store3, idle_write, read1, read2, read3, read4, output_ready);
+	type PUF_state_type is (store_entropy_idle, store1, store2, store3, idle_write, read1, read2, read3, read4, output_ready);
 end package cryptocore_pckg;
  
 -- Package Body Section, e.g for function implementation (function declaration in head)

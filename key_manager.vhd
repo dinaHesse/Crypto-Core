@@ -3,33 +3,35 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 
 library work;
-use work.crypteng_pckg.all;
+use work.cryptocore_pckg.all;
 
 entity key_manager is
  port (
     	clk   : in std_logic;
     	res_n   : in std_logic;
 	
---crypteng_if:
 	-- Inputs:
-	key_address_in:	in std_logic_vector(3  downto 0); --16 keys 
-	sel_in:		in std_logic;
-	cntrl_in: 	in key_cntrl_type;
-	puf_in:		in std_logic_vector(127 downto 0);
+		--from interface:
+		key_address_in:	in std_logic_vector(3  downto 0); --16 keys 
+		sel_in:			in std_logic;
+		cntrl_in: 		in key_cntrl_type;
+		puf_in:			in std_logic_vector(127 downto 0);
+		--from rng:
+		rn_in:			in std_logic_vector(1023 downto 0);
+		rn_is_new:		in std_logic;
 
-	rn_in:		in std_logic_vector(1023 downto 0);
-	rn_is_new:	in std_logic;
+	-- Outputs:
+		--to interface
+		ready_out: 		out	std_logic;
+		--to puf_connector
+		read_puf_index:	out	unsigned(31 downto 0);
+		read_puf: 		out	std_logic;
+		--to rng:
+		refresh_rn_out:	out	std_logic;
 
-    	-- Outputs:
-	ready_out: 	out	std_logic;
-	read_puf_index:	out	unsigned(31 downto 0);
-	read_puf: 	out	std_logic;
-
-	refresh_rn_out:	out	std_logic;
-
-	--aes:
-	aes_key_out: 	out std_logic_vector(0 to N_BITS);
-	random_aes:	out std_logic_vector(367  downto 0)
+		--to aes:
+		aes_key_out: 	out std_logic_vector(0 to N_BITS);
+		random_aes:		out std_logic_vector(367  downto 0)
 
     );
 
@@ -41,7 +43,7 @@ architecture behav of key_manager is
 	signal	key_reg :	key_reg_type;
 	signal	generating_key_index:	integer range key_reg_type'length-1 downto 0;
 	signal	is_generating: 	std_logic;
-	signal entropy_stored:	std_logic;
+	signal 	entropy_stored:	std_logic;
 
 begin
 

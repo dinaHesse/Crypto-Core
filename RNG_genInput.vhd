@@ -19,18 +19,19 @@ entity RNG_genInput is
     	res_n:	 	in std_logic;
 		
 	-- Inputs:
-	--von ausserhalb:
-	refresh:	in std_logic;
+		--from keymanager:
+		refresh:	in std_logic;
+		--from PUF connector
+		puf_rn:		in std_logic_vector(511 downto 0);
 
-	puf_rn:		in std_logic_vector(511 downto 0);
-
-    	-- Outputs:
-	rn_out:	out std_logic_vector(1023 downto 0);
-	
-	is_new:		out std_logic
-	--to debug:
-	--test: 		out std_logic;
-	--logic_key: 		in std_logic_vector(127 downto 0) 
+    -- Outputs:
+		--to keymanager:
+		rn_out:		out std_logic_vector(1023 downto 0);
+		is_new:		out std_logic
+		
+		--to debug:
+		--test: 		out std_logic;
+		--logic_key: 		in std_logic_vector(127 downto 0) 
 
     );
 

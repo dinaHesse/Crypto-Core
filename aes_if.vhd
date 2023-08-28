@@ -1,8 +1,7 @@
 ---------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
--- 
--- Create Date:    12:01:16 10/01/2021 
+
 -- Design Name: 
 -- Module Name:    aes_if
 -- Project Name: 
@@ -23,7 +22,7 @@ use IEEE.numeric_std.all;
 use work.masked_aes_pkg.all;
 
 library work;
-use work.crypteng_pckg.all;
+use work.cryptocore_pckg.all;
 
 
 entity aes_if is
@@ -34,38 +33,38 @@ entity aes_if is
 	-- Inputs:
 	
 	--from AES-module:
-	-- Cyphertext C
-    	ciphertext : 		in  t_shared_gf8(N downto 0);
-	done : 			in std_logic; -- ciphertext is ready
+		-- Cyphertext C
+		ciphertext : 	in  t_shared_gf8(N downto 0);
+		done : 			in std_logic; -- ciphertext is ready
 	
 	-- from host
-	key_in : 		in std_logic_vector(0 to N_BITS);
-	plaintext_in: 		in std_logic_vector(0 to N_BITS);
-	random_in:		in std_logic_vector(367  downto 0);
-	pt_ready:		in std_logic;
-	key_ready:		in std_logic;
+		key_in : 		in std_logic_vector(0 to N_BITS);
+		plaintext_in: 	in std_logic_vector(0 to N_BITS);
+		random_in:		in std_logic_vector(367  downto 0);
+		pt_ready:		in std_logic;
+		key_ready:		in std_logic;
 	
 	
-    	-- Outputs:
-	--to AES:
+    -- Outputs:
+	--to AES-module:
     	-- Plaintext shares
-    	plaintext : 		out t_shared_gf8(N downto 0);
+    	plaintext : 	out t_shared_gf8(N downto 0);
     	-- Key shares
     	key : 			out t_shared_gf8(N downto 0);
     	-- Randomnes for remasking
-    	randomness: 		out std_logic_vector (111  downto 0);
+    	randomness: 	out std_logic_vector (111  downto 0);
     	-- Control signals
-    	start_out : 		out  std_logic; -- Start the core
-	reset_out : 		out std_logic;
+    	start_out : 	out  std_logic; -- Start the core
+		reset_out : 	out std_logic;
 
-	--to Host:
-	cipher_out: 		out std_logic_vector(0 to N_BITS);
-	busy: 			out std_logic
+	--to host:
+		cipher_out: 	out std_logic_vector(0 to N_BITS);
+		busy: 			out std_logic
 			
 	
-	--to debug:
-	--test: 		out std_logic;
-	--logic_key: 		in std_logic_vector(127 downto 0) 
+		--to debug:
+		--test: 		out std_logic;
+		--logic_key: 	in std_logic_vector(127 downto 0) 
 
     );
 
