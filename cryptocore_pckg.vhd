@@ -5,10 +5,12 @@ use IEEE.numeric_std.all;
 
 -- Package Declaration Section
 package cryptocore_pckg is
+
+	constant N_BITS : integer := 127;
 	constant N	: integer := 1;		--if Protection order = 0 -> 127, =1 -> 255
 
---only necessary if simulating the PUF:
---	constant SIZE_PUF_SIM: integer := 128;	--size of registers for simulating the PUF
+	--only necessary if simulating the PUF:
+	constant SIZE_PUF_SIM: integer := 128;	--size of registers for simulating the PUF
 
 	type data_reg_type is array (3 downto 0) of std_logic_vector(31 downto 0);
 	type ciphertext_reg_type is array (3 downto 0) of std_logic_vector(31 downto 0);
