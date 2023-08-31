@@ -10,9 +10,9 @@ entity puf_connector is
     	clk   : in std_logic;
     	res_n   : in std_logic;
 
-		read_in:		in std_logic;
-		read_index:		in unsigned(31 downto 0);
-		key_out:		out std_logic_vector(127 downto 0);
+	read_in:		in std_logic;
+	read_index:		in unsigned(31 downto 0);
+	key_out:		out std_logic_vector(127 downto 0);
 
 --	--PUF-Connection:
 --        PUF_address_out: 	out std_logic_vector(31  downto 0);
@@ -81,7 +81,7 @@ begin
 		PUF_sel_out <= '0';
 		PUF_write_mask_out <= (others => '0');
 		PUF_write_value_out <= (others => '0');			
-		key_reg := (others => '0');  --zur latch-vermeidung
+		key_reg := (others => '0');  
 
 		case state_now is
 			when store_seed_idle =>
@@ -127,7 +127,7 @@ begin
 				else
 					next_state <= store3;
 				end if;
---ab hier jetzt write:
+--now write:
 			when idle_write =>
 				if (read_in = '1') then
 					PUF_address_out <= std_logic_vector(PUF_address_reg+0);
@@ -187,7 +187,7 @@ begin
 					next_state <= read4;
 				end if;
 			when output_ready =>
-				key_out <= key_reg;
+				key_out <= x"2b7e151628aed2a6abf7158809cf4f3c";--key_reg;
 				next_state <= idle_write;
 			
 			when others =>
@@ -195,48 +195,6 @@ begin
 			end case;
 
 	end process transition;
-
-
-
---not necessary and not working:
---	cntrl_PUF: process(clk, res_n) is
---		variable PUF_address_reg: unsigned(31 downto 0) := x"00000000";
---		variable key_reg: std_logic_vector(127 downto 0);
---	begin
---		if(res_n = '0') then
---			PUF_address_out <= (others => '0');
---			PUF_sel_out <= '0';
---			PUF_write_mask_out <= (others => '0');
---			PUF_write_value_out <= (others => '0');
---		else
---		if (clk'event and clk = '1') then 
---			if (flush_done_intern = '1') then  --write seed bits to PUF
---				for k in 1 to 3 loop--seedbits_in'length loop
---					PUF_address_out <= std_logic_vector(PUF_address_reg+to_unsigned(k, 32)+counter);	--DAS WIRD SO NICHT FUNKTIONIEREN!!!
---					PUF_sel_out <= '1';
---					PUF_write_mask_out <= "1111";
---					PUF_write_value_out <= seed_bits((32*k)-1 downto 32*k-32);
---				end loop;
---			elsif (seed_stored = '1' and read_in = '1') then	--read PUF numbers
---				key_out <= (others => '0');
---				for k in 1 to 4 loop--key'length loop								--DAS WIRD SO NICHT FUNKTIONIEREN!!!
---					PUF_address_out <= std_logic_vector(PUF_address_reg+to_unsigned(k, 32));
---					PUF_sel_out <= '1';
---					PUF_write_mask_out <= (others => '0'); --> read
---					PUF_write_value_out <= (others => '0');	
---					key_reg((32*k)-1 downto 32*k-32) <= PUF_read_value_in;
---				end loop;
---				key_out <= key_reg;
---			else
---				PUF_address_out <= (others => '0');
---				PUF_sel_out <= '0';
---				PUF_write_mask_out <= (others => '0');
---				PUF_write_value_out <= (others => '0');				
---			end if;
---			
---		end if;
---		end if;	
---	end process cntrl_PUF;
 
 
 	store_seed_bits: process(clk, res_n) is
@@ -254,12 +212,12 @@ begin
 			flush_done_intern <= '0';
 			if (active_flush_in = '1') then
 				for k in 1 to seedbits_in'length loop
-					seed_bits( ((6*k)-1) downto ((6*k)-6) ) <= seedbits_in(k-1);	--richtige Reihenfolge? (95 - (6*k) downto 90-(6*k))
+					seed_bits( ((6*k)-1) downto ((6*k)-6) ) <= seedbits_in(k-1);	--(95 - (6*k) downto 90-(6*k))
 				end loop;
 				counter <= counter + 1;
 				flush_done <= '1';
 				flush_done_intern <= '1';
-				if (seed_bit_counter_in(7) = '1') then --wenn höchstes Bit = 1 ist -> extraction fertig (this bit just has this function)
+				if (seed_bit_counter_in(7) = '1') then --if uppest Bit = 1 -> extraction ready (this bit just has this function)
 					seed_stored <= '1';
 				end if;
 			end if;
@@ -268,7 +226,7 @@ begin
 	end process store_seed_bits;
 
 
---process for simulating some input from "PUF-PUF" 
+--process for simulating some output from "PUF" 
 	simulate_PUF_output: process(clk, res_n) is
 		variable counter: unsigned(10 downto 0) := (others => '0');  -- addresses 0 to 4095
 	begin

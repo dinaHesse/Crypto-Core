@@ -12,7 +12,7 @@ package cryptocore_pckg is
 	--only necessary if simulating the PUF:
 	constant SIZE_PUF_SIM: integer := 128;	--size of registers for simulating the PUF
 
-	type data_reg_type is array (3 downto 0) of std_logic_vector(31 downto 0);
+	type data_reg_type is array (11 downto 0) of std_logic_vector(31 downto 0);
 	type ciphertext_reg_type is array (3 downto 0) of std_logic_vector(31 downto 0);
 
 	type key_reg_type is array (31 downto 0) of std_logic_vector(127 downto 0);
@@ -20,7 +20,9 @@ package cryptocore_pckg is
 	type instr_type is (aes, check, hash, genkey, datamem, idle); --to be continued :)
 	type key_cntrl_type is (idle, genkey, aes); -- gen_randomnumber, hash, ...
 
-	type seed_bit_input_type is array (15 downto 0) of std_logic_vector(5 downto 0);
+	constant N_SEED_BLOCKS : integer := 16;
+	constant SIZE_SEED_BLOCKS : integer := 6;
+	type seed_bit_input_type is array (N_SEED_BLOCKS-1 downto 0) of std_logic_vector(SIZE_SEED_BLOCKS-1 downto 0);
 
 	type PUF_state_type is (store_seed_idle, store1, store2, store3, idle_write, read1, read2, read3, read4, output_ready);
 end package cryptocore_pckg;

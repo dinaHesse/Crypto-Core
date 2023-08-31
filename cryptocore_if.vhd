@@ -72,7 +72,7 @@ begin
 		address_short := address_reg(7 downto 2);
 		-- -> 4 addresses xx00, xx01, xx10, xx11 lead to the same instruction/data_register
 		instr <= idle;
-		if (address_reg >= x"03FFFF") then
+		if (sel_in = '1') then
 		case to_integer(address_short) is
 			when 0 to 3 => instr <= aes;			--aes instruction
 
@@ -209,7 +209,7 @@ begin
 			if (instr = aes AND sel_in = '1' AND write_in = '1') then
 				address_reg 	:= unsigned(write_value_in(31 downto 16)); 
 				--start aes-encryption
-				plaintext_aes <= data_reg(2*to_integer(address_reg(4 downto 1))) & data_reg(2*to_integer(address_reg(4 downto 1))+1) & data_reg(2*to_integer(address_reg(4 downto 1))+2) & data_reg(2*to_integer(address_reg(4 downto 1))+3); --x"3243f6a8885a308d313198a2e037073400000000000000000000000000000000"; --(others => '1'); --data-reg und so 
+				plaintext_aes <= data_reg(to_integer(address_reg(4 downto 1))) & data_reg(to_integer(address_reg(4 downto 1))+1) & data_reg(to_integer(address_reg(4 downto 1))+2) & data_reg(to_integer(address_reg(4 downto 1))+3); --x"3243f6a8885a308d313198a2e037073400000000000000000000000000000000"; --(others => '1'); --data-reg und so 
 				start_aes <= '1';
 
 

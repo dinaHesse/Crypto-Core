@@ -18,7 +18,7 @@ use work.masked_aes_pkg.all;
 entity cryptocore_top is
  port (
     	clk   : in std_logic;
-    	res   : in std_logic;
+    	res_n   : in std_logic;
 	
 	--EXTERN:
 	-- Inputs:
@@ -43,8 +43,6 @@ end cryptocore_top;
 
 architecture struct of cryptocore_top is
 
-	signal res_n:			std_logic;
-
 	-- cryptocore_if to aes_if:
 	signal plaintext_crypt_aes:	std_logic_vector(0 to N_BITS);
 	signal start_crypt_aes:		std_logic;
@@ -64,6 +62,7 @@ architecture struct of cryptocore_top is
 	--key signals:
 	signal key_sel:			std_logic;
 	signal key_ready:		std_logic;
+	signal key_ready_mngr_aes:	std_logic;
 	signal key_mngr_aes:		std_logic_vector(0 to N_BITS);
 	signal key_address:		std_logic_vector(3 downto 0);
 	signal key_cntrl:		key_cntrl_type;
@@ -89,8 +88,6 @@ architecture struct of cryptocore_top is
 
 begin
 
-	res_n <= NOT res;	--icicle-reset is active-high, I am used to active-low -> res_n
-	
 	cryptocore_if: entity work.cryptocore_if
 	port map(
 		clk => clk,
@@ -138,8 +135,9 @@ begin
 			key_in => key_mngr_aes,
 			plaintext_in => plaintext_crypt_aes,
 			random_in => random_mngr_aes,
-			key_ready => key_ready,
 			pt_ready => start_crypt_aes,
+
+			key_ready => key_ready_mngr_aes,
 		
 		
 	    -- Outputs:
@@ -215,6 +213,7 @@ begin
 		refresh_rn_out => refresh_RNG,
 
 		aes_key_out => key_mngr_aes,
+		aes_key_ready => key_ready_mngr_aes,
 		random_aes => random_mngr_aes	
 
 

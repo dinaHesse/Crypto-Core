@@ -39,7 +39,7 @@ entity aes_if is
 	
 	-- from host
 		key_in : 		in std_logic_vector(0 to N_BITS);
-		plaintext_in: 	in std_logic_vector(0 to N_BITS);
+		plaintext_in: 		in std_logic_vector(0 to N_BITS);
 		random_in:		in std_logic_vector(367  downto 0);
 		pt_ready:		in std_logic;
 		key_ready:		in std_logic;
@@ -55,11 +55,11 @@ entity aes_if is
     	randomness: 	out std_logic_vector (111  downto 0);
     	-- Control signals
     	start_out : 	out  std_logic; -- Start the core
-		reset_out : 	out std_logic;
+	reset_out : 	out std_logic;
 
 	--to host:
-		cipher_out: 	out std_logic_vector(0 to N_BITS);
-		busy: 			out std_logic
+	cipher_out: 	out std_logic_vector(0 to N_BITS);
+	busy: 			out std_logic
 			
 	
 		--to debug:
@@ -89,8 +89,8 @@ begin
 	randomness <= random_in(111 downto 0);
 
 	gen_input: process(clk,res_n) is
-		variable key_reg: std_logic_vector(0 to (N_BITS*2)+1):= x"2b7e151628aed2a6abf7158809cf4f3c00000000000000000000000000000000";
-		variable pt_reg: std_logic_vector (0 to N_BITS*2+1):= x"3243f6a8885a308d313198a2e037073400000000000000000000000000000000";
+		variable key_reg: std_logic_vector(0 to (N_BITS*2)+1); --:= x"2b7e151628aed2a6abf7158809cf4f3c00000000000000000000000000000000"; -- <- Testvectors
+		variable pt_reg: std_logic_vector (0 to N_BITS*2+1); --:= x"3243f6a8885a308d313198a2e037073400000000000000000000000000000000";
 		variable random_reg: std_logic_vector (111 downto 0) := (others => '0');
 		variable counter: integer range 0 to 15:= 0;
 		variable was_done: std_logic;

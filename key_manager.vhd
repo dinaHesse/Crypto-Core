@@ -12,7 +12,7 @@ entity key_manager is
 	
 	-- Inputs:
 		--from interface:
-		key_address_in:	in std_logic_vector(3  downto 0); --16 keys 
+		key_address_in:		in std_logic_vector(3  downto 0); --16 keys 
 		sel_in:			in std_logic;
 		cntrl_in: 		in key_cntrl_type;
 		puf_in:			in std_logic_vector(127 downto 0);
@@ -24,13 +24,14 @@ entity key_manager is
 		--to interface
 		ready_out: 		out	std_logic;
 		--to puf_connector
-		read_puf_index:	out	unsigned(31 downto 0);
+		read_puf_index:		out	unsigned(31 downto 0);
 		read_puf: 		out	std_logic;
 		--to rng:
-		refresh_rn_out:	out	std_logic;
+		refresh_rn_out:		out	std_logic;
 
 		--to aes:
-		aes_key_out: 	out std_logic_vector(0 to N_BITS);
+		aes_key_out: 		out std_logic_vector(0 to N_BITS);
+		aes_key_ready:		out std_logic;
 		random_aes:		out std_logic_vector(367  downto 0)
 
     );
@@ -50,13 +51,13 @@ begin
 	cntrl_key: process(clk, res_n) is
 		variable	randomness:	std_logic_vector(367 downto 0):= (others=> '0');
 	begin
-		
+
 		if(res_n = '0') then
-			aes_key_out <= (others=>'0');
 			random_aes	<= (others => '0');
 			ready_out <= '0';
-
 			refresh_rn_out <= '0';
+			aes_key_out <= (others=>'0');
+			aes_key_ready <= '0';	
 		else
 		if (clk'event and clk = '1') then
 			refresh_rn_out <= '0';
@@ -65,14 +66,11 @@ begin
 			if (sel_in = '1') then
 				refresh_rn_out <= '1';
 				case cntrl_in is
-				when aes => 	if (unsigned(key_address_in) = 0) then
-							aes_key_out <= x"2b7e151628aed2a6abf7158809cf4f3c";
-						else
-							aes_key_out <= key_reg(to_integer(unsigned(key_address_in))); 
-						end if;
+				when aes => 	aes_key_out <= key_reg(to_integer(unsigned(key_address_in))); 
+						aes_key_ready <= '1';
 						ready_out <= '1';
 	
-				when genkey => 	--key_reg(to_integer(unsigned(key_address_in))) <= (x"2b7e151628aed2a6abf7158809cf4f3c") xor seed_bits(127 downto 0);
+				when genkey => 	--key_reg(to_integer(unsigned(key_address_in))) <= x"2b7e151628aed2a6abf7158809cf4f3c"; --(others => '0');--
 						ready_out <= '0';
 		
 	   			when others => 	aes_key_out <= (others=>'0');
@@ -129,7 +127,7 @@ begin
 			read_puf <= '0';
 			if (is_generating = '1') then
 				if (puf_in /= x"00000000000000000000000000000000") then
-					key_reg(generating_key_index) <= puf_in;
+					key_reg(generating_key_index) <= x"2b7e151628aed2a6abf7158809cf4f3c";--puf_in;
 					is_generating <='0';
 					generating_key_index <= 0;
 					read_puf_index <= (others => '0');
@@ -138,7 +136,7 @@ begin
 				is_generating <='1';
 				generating_key_index <= to_integer(unsigned(key_address_in));
 				read_puf_index <= (others => '0');
-				read_puf_index(3 downto 0) <= unsigned(key_address_in); --oder ein anderer Index? Hochzählen? Zufällig?
+				read_puf_index(3 downto 0) <= unsigned(key_address_in); 
 				read_puf <= '1';
 			else
 			
